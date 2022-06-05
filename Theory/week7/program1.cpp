@@ -1,57 +1,55 @@
-#include<bits/stdc++.h>
+#include<iostream>
+#include<climits>     
 using namespace std;
-
-int main(){
-	int N,m;
-	cin >> N >> m;
-	vector<pair<int,int> > adj[N]; 
-
-	int a,b,wt;
-	for(int i = 0; i<m ; i++){
-		cin >> a >> b >> wt;
-		adj[a].push_back(make_pair(b,wt));
-		adj[b].push_back(make_pair(a,wt));
-	}	
-	
-	int parent[N]; 
-      
-    int key[N]; 
-      
-    bool mstSet[N]; 
-  
-    for (int i = 0; i < N; i++) 
-        key[i] = INT_MAX, mstSet[i] = false; 
-    
-    priority_queue< pair<int,int>, vector <pair<int,int>> , greater<pair<int,int>> > pq;
-
-    key[0] = 0; 
-    parent[0] = -1; 
-    pq.push({0, 0});
-    while(!pq.empty())
-    { 
-        int u = pq.top().second; 
-        pq.pop(); 
-        
-        mstSet[u] = true; 
-        
-        for (auto it : adj[u]) {
-            int v = it.first;
-            int weight = it.second;
-            if (mstSet[v] == false && weight < key[v])
-            { 
-                parent[v] = u;
-		        key[v] = weight; 
-                pq.push({key[v], v});    
-            }
-        }
-            
-    } 
-    int ans=0;
-    for (int i=0;i<N;i++)
-      {
-        if (key[i]!=INT_MAX)
-            ans+=key[i];            
-      }
-	
-    cout<<ans<<endl;
+int minimumDist(int dist[], bool Tset[]) 
+{
+	int min=INT_MAX,index;
+	for(int i=0;i<6;i++) 
+	{
+		if(Tset[i]==false && dist[i]<=min)      
+		{
+			min=dist[i];
+			index=i;
+		}
+	}
+	return index;
+}
+void Dijkstra(int graph[6][6],int src)
+{
+	int dist[6];                             
+	bool Tset[6]; 
+	for(int i = 0; i<6; i++)
+	{
+		dist[i] = INT_MAX;
+		Tset[i] = false;	
+	}
+	dist[src] = 0;               
+	for(int i = 0; i<6; i++)                           
+	{
+		int m=minimumDist(dist,Tset); 
+		Tset[m]=true;
+		for(int i = 0; i<6; i++)                  
+		{
+			if(!Tset[i] && graph[m][i] && dist[m]!=INT_MAX && dist[m]+graph[m][i]<dist[i])
+				dist[i]=dist[m]+graph[m][i];
+		}
+	}
+	cout<<"Vertex\t\tDistance from source"<<endl;
+	for(int i = 0; i<6; i++)                      
+	{ 
+		char str=65+i;
+		cout<<str<<"\t\t\t"<<dist[i]<<endl;
+	}
+}
+int main()
+{
+	int graph[6][6]={
+		{0, 2, 10, 1, 0, 0},
+		{10, 0, 0, 50, 10, 0},
+		{20, 0, 0, 20, 33, 3},
+		{1, 50, 20, 0, 20, 2},
+		{10, 10, 20, 20, 0, 1},
+		{0, 0, 2, 2, 1, 0}};
+	Dijkstra(graph,0);
+	return 0;	                        
 }
